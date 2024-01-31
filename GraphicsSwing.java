@@ -29,22 +29,42 @@ public class GraphicsSwing extends JPanel {
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = buffer.createGraphics();
 
-        for (int i = 0; i < 100; i++) {
-            g2.setColor(Pallete.getGradient(Pallete.background.darker(), Pallete.background, i));
-            g2.fillRect(0, 6 * i, 600, 6);
-        }
-
+        paintBackground(g2);
+        paintBridge(g2);
         g2.setColor(Color.WHITE);
-        drawCloud(g2);
         g.drawImage(buffer, 0, 0, null);
     }
 
-    private void drawCloud(Graphics g) {
-        g.setColor(Pallete.getShade(Pallete.highlight, 10));
-        for (int i = 0; i < 200; i += 10) {
-            int[] x = {300, 500, 520};
-            int[] y = {400, 400, 400};
-            Graphicer.drawPolygon(g, x, y);
+    private void paintBridge(Graphics g) {
+        g.setColor(Pallete.Primary);
+        int y_start = 400;
+        int frence_y_offset = 520;
+        // top_2
+        for (int i = 0; i < 2; i++)
+        {
+            Graphicer.bresenhamLine(g, 0, y_start+=10, 600, frence_y_offset, 2);
+            g.setColor(Pallete.Primary.brighter());
+            frence_y_offset+=10;
+        }
+
+        //low_0
+        g.setColor(Pallete.Primary);
+        Graphicer.bresenhamLine(g, 0, 460, 600, 550, 2);
+
+        //stick_loop
+        int x_start = 11;
+        y_start = 422;
+        int x_start_bot = 9;
+        for (int i = 0; i < 600; i+=30) {
+            Graphicer.bresenhamLine(g, x_start + i, Graphicer.y_bresenham(i + 600), x_start_bot + i, Graphicer.y_bresenham(i + 1200), 2);
+        }
+        Graphicer.yCoordinates.clear();
+    }
+
+    private void paintBackground(Graphics g){
+        for (int i = 0; i < 100; i++) {
+            g.setColor(Pallete.getGradient(Pallete.background.darker(), Pallete.background, i));
+            g.fillRect(0, 6 * i, 600, 6);
         }
     }
 }
