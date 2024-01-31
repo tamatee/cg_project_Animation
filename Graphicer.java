@@ -203,22 +203,12 @@ public class Graphicer extends GraphicsSwing {
         g.fillPolygon(circle);
     }
 
-    static void FireworksLayer(Graphics2D g, int centerX, int centerY, int line, int min, int max, int offset,
-            Color color, int width) {
-        int[] len = new int[line];
-
-        for (int i = 0; i < line; i++) {
-            int size = random.nextInt(min, max);
-            len[i] = size;
-        }
-
-        g.setColor(color);
-        for (int j = 0; j < len.length; j += offset) {
-            bresenhamLine(
-                    g, centerX + offset, centerY + offset,
-                    (int) (centerX + len[j] * Math.cos(2 * Math.PI * j / len[j])),
-                    (int) (centerY + len[j] * Math.sin(2 * Math.PI * j / len[j])),
-                    width);
+    static void drawCloudLine(Graphics g, int x1, int y1, int x2, int y2, int radius) {
+        for (double j = 0; j <= 1; j += 0.05) {
+            int dx = (int)((x2 - x1) * j);
+            int dy = (int)((y2 - y1) * j);
+            Graphicer.drawCircle(g, x1 + dx, y1 + dy, 15,
+                                Pallete.getShade(Pallete.highlight, 4));
         }
     }
 
