@@ -3,13 +3,19 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 
-public class Graphicer extends GraphicsSwing{
+public class Graphicer extends GraphicsSwing {
     static Random random = new Random(1);
+    static List<Integer> yCoordinates = new ArrayList<>();
 
+    static Integer y_bresenham(int i) {
+        return yCoordinates.get(i);
+    }
     static void bresenhamLine(Graphics g, int x1, int y1, int x2, int y2) {
         int dx = Math.abs(x2 - x1);
         int dy = Math.abs(y2 - y1);
@@ -46,6 +52,7 @@ public class Graphicer extends GraphicsSwing{
     }
 
     static void bresenhamLine(Graphics g, int x1, int y1, int x2, int y2, int size) {
+
         int dx = Math.abs(x2 - x1);
         int dy = Math.abs(y2 - y1);
 
@@ -59,12 +66,16 @@ public class Graphicer extends GraphicsSwing{
             dy = temp;
             isSwap = true;
         }
+
         int D = 2 * dy - dx;
         int x = x1;
         int y = y1;
 
         for (int i = 1; i < dx; i++) {
+            yCoordinates.add(y); // Store the y-coordinate
+
             plot(g, x, y, size);
+
             if (D >= 0) {
                 if (isSwap)
                     x += sx;
@@ -72,13 +83,16 @@ public class Graphicer extends GraphicsSwing{
                     y += sy;
                 D -= 2 * dx;
             }
+
             if (isSwap)
                 y += sy;
             else
                 x += sx;
+
             D += 2 * dy;
         }
     }
+
 
     static void bezierCurve(Graphics g, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         for (int i = 0; i < 1000; i++) {
@@ -160,11 +174,11 @@ public class Graphicer extends GraphicsSwing{
     }
 
     static void drawRect(Graphics g, int x1, int y1, int x2, int y2, Color color) {
-        int[] xTopPoly = { x1, x2, x1};
-        int[] yTopPoly = { y1, y1, y2};
+        int[] xTopPoly = { x1, x2, x1 };
+        int[] yTopPoly = { y1, y1, y2 };
 
-        int[] xBottomPoly = {x1, x2, x2};
-        int[] yBottomPoly = {y2, y1, y2};
+        int[] xBottomPoly = { x1, x2, x2 };
+        int[] yBottomPoly = { y2, y1, y2 };
         Polygon topPoly = new Polygon(xTopPoly, yTopPoly, 3);
         Polygon bottomPoly = new Polygon(xBottomPoly, yBottomPoly, 3);
 
@@ -189,21 +203,12 @@ public class Graphicer extends GraphicsSwing{
         g.fillPolygon(circle);
     }
 
-    static void FireworksLayer(Graphics2D g, int centerX, int centerY, int line, int min, int max, int offset, Color color, int width) {
-        int[] len = new int[line];
-
-        for (int i = 0; i < line; i++) {
-            int size = random.nextInt(min, max);
-            len[i] = size;
-        }
-
-        g.setColor(color);
-        for (int j = 0; j < len.length; j += offset) {
-            bresenhamLine(
-                    g, centerX + offset, centerY + offset,
-                    (int) (centerX + len[j] * Math.cos(2 * Math.PI * j / len[j])),
-                    (int) (centerY + len[j] * Math.sin(2 * Math.PI * j / len[j])),
-                    width);
+    static void drawCloudLine(Graphics g, int x1, int y1, int x2, int y2, int radius) {
+        for (double j = 0; j <= 1; j += 0.05) {
+            int dx = (int)((x2 - x1) * j);
+            int dy = (int)((y2 - y1) * j);
+            Graphicer.drawCircle(g, x1 + dx, y1 + dy, 15,
+                                Pallete.getShade(Pallete.highlight, 4));
         }
     }
 
