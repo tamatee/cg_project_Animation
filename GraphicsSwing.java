@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
@@ -28,9 +28,9 @@ public class GraphicsSwing extends JPanel implements Runnable {
             lastTime = currentTime;
 
             // bridge move
-            bridgeMove += bridge_velocity * elapsedTime / 3000.0;
-            poleMove -= pole_velocity * elapsedTime / 3000.0;
-            if (Math.abs(startTime - currentTime) >= 2000) {
+            bridgeMove += bridge_velocity * elapsedTime / 10000.0;
+            poleMove += pole_velocity * elapsedTime / 3000.0;
+            if (Math.abs(startTime - currentTime) >= 10000) {
                 bridge_velocity = 0;
                 pole_velocity = 0;
             }
@@ -72,29 +72,74 @@ public class GraphicsSwing extends JPanel implements Runnable {
 
     private void paintBridge(Graphics2D g) {
         g.setColor(Pallete.Primary);
-        int y_start = 400;
-        int frence_y_offset = 520;
+        int y_start = 350;
+        int frence_y_offset = 470;
         g.translate(0, bridgeMove);
+
+        //Light_pole
+        Graphicer.drawCircle(g, 495, 425, 15, Pallete.Primary);
+        int x_poleBase[] = { 483, 505, 478, 510 };
+        int y_poleBase[] = { 425, 425, 500, 520 };
+        Graphicer.drawRect_Affine(g, x_poleBase, y_poleBase, Pallete.Primary);
+        Graphicer.bresenhamLine(g, 492, 450, 490, 110, 8);
+        Graphicer.bresenhamLine(g, 490, 105, 418, 130, 5);
+        Graphicer.yCoordinates.clear();
+
+
+
+        Graphicer.drawCircle(g, 494, 110, 5, Pallete.Primary);
         // top_2
         for (int i = 0; i < 2; i++) {
-            Graphicer.bresenhamLine(g, 0, y_start += 10, 600, frence_y_offset, 2);
-            g.setColor(Pallete.Primary.brighter());
+            Graphicer.bresenhamLine(g, 0, y_start += 10, 600, frence_y_offset, 5);
+            g.setColor(Pallete.Primary);
             frence_y_offset += 10;
         }
 
         // low_0
         g.setColor(Pallete.Primary);
-        Graphicer.bresenhamLine(g, 0, 460, 600, 550, 2);
+        Graphicer.bresenhamLine(g, 0, 410, 600, 500, 5);
 
         // stick_loop
         int x_start = 11;
-        y_start = 422;
+        y_start = 372;
         int x_start_bot = 9;
         for (int i = 0; i < 600; i += 30) {
-            Graphicer.bresenhamLine(g, x_start + i, Graphicer.y_bresenham(i + 600), x_start_bot + i,
-                    Graphicer.y_bresenham(i + 1200), 2);
+            if (i % 180 == 0)
+                Graphicer.bresenhamLine(g, x_start + i, Graphicer.y_bresenham(i + 600) - 30, x_start_bot + i,
+                        Graphicer.y_bresenham(i + 1200) + 50, 6);
+            else
+                Graphicer.bresenhamLine(g, x_start + i, Graphicer.y_bresenham(i + 600), x_start_bot + i,
+                        Graphicer.y_bresenham(i + 1200), 4);
         }
         Graphicer.yCoordinates.clear();
+
+        // Bridge_pillar0
+        int x_pillarB[] = { 0, 600, 0, 600 };
+        int y_pillarB[] = { 435, 511, 900, 900 };
+
+        Graphicer.drawRect_Affine(g, x_pillarB, y_pillarB, Pallete.Secondary);
+        // Bridge_pillar1
+        int x_pillar1[] = { 80, 140, 70, 135 };
+        int y_pillar1[] = { 490, 500, 900, 900 };
+
+        // Bridge_pillar2
+        int x_pillar2[] = { 260, 320, 250, 310 };
+        int y_pillar2[] = { 510, 515, 900, 900 };
+
+        // Bridge_pillar3
+        int x_pillar3[] = { 417, 461, 415, 460 };
+        int y_pillar3[] = { 530, 535, 900, 900 };
+
+        int x_pillar[][] = { x_pillar1, x_pillar2, x_pillar3 };
+        int y_pillar[][] = { y_pillar1, y_pillar2, y_pillar3 };
+
+        for (int i = 0; i < y_pillar.length; i++) {
+            Graphicer.drawRect_Affine(g, x_pillar[i], y_pillar[i], Pallete.Primary);
+        }
+        // Bridge_base floor
+        int x_baseBridge[] = { 0, 600, 0, 600 };
+        int y_baseBridge[] = { 435, 511, 490, 550 };
+        Graphicer.drawRect_Affine(g, x_baseBridge, y_baseBridge, Pallete.Primary);
     }
 
     private void drawComet(Graphics g) {
@@ -131,12 +176,12 @@ public class GraphicsSwing extends JPanel implements Runnable {
     }
 
     private void drawStar(Graphics g) {
-        int[] x = {20, 70, 110, 65, 135, 280, 330, 385, 8, 25, 15,
-                    50, 360, 370, 410, 440, 445, 460, 550, 540, 580,
-                    560, 550, 570, 580};
-        int[] y = {40, 20, 40, 82, 45, 30, 10, 35, 300, 320, 380,
-                    440, 420, 430, 330, 410, 420, 460, 380, 390, 400,
-                    310, 40, 20, 60};
+        int[] x = { 20, 70, 110, 65, 135, 280, 330, 385, 8, 25, 15,
+                50, 360, 370, 410, 440, 445, 460, 550, 540, 580,
+                560, 550, 570, 580 };
+        int[] y = { 40, 20, 40, 82, 45, 30, 10, 35, 300, 320, 380,
+                440, 420, 430, 330, 410, 420, 460, 380, 390, 400,
+                310, 40, 20, 60 };
         for (int i = 0; i < x.length; i++)
             Graphicer.drawCircle(g, x[i], y[i], 2, Pallete.highlight);
     }
