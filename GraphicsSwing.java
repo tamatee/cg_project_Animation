@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
@@ -84,14 +84,13 @@ public class GraphicsSwing extends JPanel implements Runnable {
         Graphicer.bresenhamLine(g, 492, 450, 490, 110, 8);
         Graphicer.bresenhamLine(g, 490, 105, 418, 130, 5);
         Graphicer.yCoordinates.clear();
-
-
-
         Graphicer.drawCircle(g, 494, 110, 5, Pallete.Primary);
+        Graphicer.drawEclipse(g, 415, 135, 30, 15, Pallete.DownLight);
+
         // top_2
+        g.setColor(Pallete.Primary);
         for (int i = 0; i < 2; i++) {
             Graphicer.bresenhamLine(g, 0, y_start += 10, 600, frence_y_offset, 5);
-            g.setColor(Pallete.Primary);
             frence_y_offset += 10;
         }
 

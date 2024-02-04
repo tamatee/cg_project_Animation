@@ -201,6 +201,28 @@ public class Graphicer extends GraphicsSwing {
         g.fillPolygon(bottomPoly);
     }
 
+    static void drawEclipse(Graphics g, int centerX, int centerY, int width, int height, Color color)
+    {
+        g.setColor(color);
+        int ellipseWidth = width / 2;
+        int ellipseHeight = height / 2;
+
+        int x = (width - ellipseWidth) / 2;
+        int y = (height - ellipseHeight) / 2;
+
+        int sides = 600; // Adjust the number of sides for smoother ellipse
+        int[] xPoints = new int[sides];
+        int[] yPoints = new int[sides];
+
+        for (int i = 0; i < sides; i++) {
+            double angle = 2 * Math.PI * i / sides;
+            xPoints[i] = (int) (centerX + x + ellipseWidth * Math.cos(angle));
+            yPoints[i] = (int) (centerY + y + ellipseHeight * Math.sin(angle));
+        }
+
+        g.fillPolygon(xPoints, yPoints, sides);
+    }
+
     static void drawCircle(Graphics g, int centerX, int centerY, int radius, Color color) {
         int sides = 360;
         int[] xPoints = new int[sides];
