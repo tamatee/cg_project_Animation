@@ -187,6 +187,42 @@ public class Graphicer extends GraphicsSwing {
         g.fillPolygon(bottomPoly);
     }
 
+    static void drawRect_Affine(Graphics g, int []x, int []y, Color color) {
+        int[] xTopPoly = { x[0], x[1], x[2] };
+        int[] yTopPoly = { y[0], y[1], y[2] };
+
+        int[] xBottomPoly = { x[2], x[1], x[3] };
+        int[] yBottomPoly = { y[2], y[1], y[3] };
+        Polygon topPoly = new Polygon(xTopPoly, yTopPoly, 3);
+        Polygon bottomPoly = new Polygon(xBottomPoly, yBottomPoly, 3);
+
+        g.setColor(color);
+        g.fillPolygon(topPoly);
+        g.fillPolygon(bottomPoly);
+    }
+
+    static void drawEclipse(Graphics g, int centerX, int centerY, int width, int height, Color color)
+    {
+        g.setColor(color);
+        int ellipseWidth = width / 2;
+        int ellipseHeight = height / 2;
+
+        int x = (width - ellipseWidth) / 2;
+        int y = (height - ellipseHeight) / 2;
+
+        int sides = 600; // Adjust the number of sides for smoother ellipse
+        int[] xPoints = new int[sides];
+        int[] yPoints = new int[sides];
+
+        for (int i = 0; i < sides; i++) {
+            double angle = 2 * Math.PI * i / sides;
+            xPoints[i] = (int) (centerX + x + ellipseWidth * Math.cos(angle));
+            yPoints[i] = (int) (centerY + y + ellipseHeight * Math.sin(angle));
+        }
+
+        g.fillPolygon(xPoints, yPoints, sides);
+    }
+
     static void drawCircle(Graphics g, int centerX, int centerY, int radius, Color color) {
         int sides = 360;
         int[] xPoints = new int[sides];

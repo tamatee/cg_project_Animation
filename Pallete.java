@@ -4,7 +4,7 @@ public class Pallete {
     static final Color Primary = Color.decode("#0f1a2e");
     static final Color Secondary = Color.decode("#0e334e");
     static final Color Accent = Color.decode("#933a39");
-    static final Color newDownLight = Color.decode("#dc9261");
+    static final Color DownLight = Color.decode("#dc9261");
     static final Color background = Color.decode("#1e4159");
     static final Color highlight = Color.decode("#4389d3");
 
