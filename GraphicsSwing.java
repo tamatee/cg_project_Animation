@@ -19,6 +19,10 @@ public class GraphicsSwing extends JPanel implements Runnable {
     protected double poleMove = 0;
     protected double bridge_velocity = 75;
     protected double pole_velocity = 50;
+    protected double person_velocity = 30;
+    protected double personMove = 0;
+    protected double comet_velocity = 10;
+    protected double cometMove = 0;
 
     public void run() {
         while (true) {
@@ -30,9 +34,13 @@ public class GraphicsSwing extends JPanel implements Runnable {
             // bridge move
             bridgeMove += bridge_velocity * elapsedTime / 10000.0;
             poleMove += pole_velocity * elapsedTime / 3000.0;
+            personMove += person_velocity * elapsedTime / 3000.0;
             if (Math.abs(startTime - currentTime) >= 10000) {
                 bridge_velocity = 0;
                 pole_velocity = 0;
+            }
+            else if(Math.abs(startTime - currentTime) >= 3000) {
+                person_velocity = 0;
             }
 
             // Display
@@ -46,7 +54,7 @@ public class GraphicsSwing extends JPanel implements Runnable {
         JFrame f = new JFrame();
         f.add(m);
         f.setTitle("Lonely night");
-        f.setSize(600, 600);
+        f.setSize(800, 800);
         f.setBackground(Color.BLACK);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setVisible(true);
@@ -65,9 +73,28 @@ public class GraphicsSwing extends JPanel implements Runnable {
         drawComet(g2);
         drawStar(g2);
         drawElectricPole(g2);
+        paintObject(g2);;
         paintBridge(g2);
         g2.setColor(Color.WHITE);
         g.drawImage(buffer, 0, 0, null);
+    }
+
+    private void paintObject(Graphics2D g)
+    {
+
+        g.translate(personMove, 0);
+        int[] xPointTorso = {115, 150, 105, 140};
+        int[] yPointTorso = {430, 435, 500, 505};
+
+        int[] xPointHead = {121, 154, 116, 145};
+        int[] yPointHead = {395, 400, 450, 457};
+        g.rotate(0.06);
+        Graphicer.drawEclipse(g, 163, 380, 35, 50, Pallete.Primary);
+        Graphicer.drawEclipse(g, 163, 412, 37, 20, Pallete.Primary);
+        g.rotate(-0.09);
+        Graphicer.drawRect_Affine(g, xPointTorso, yPointTorso, Pallete.Primary);
+        Graphicer.drawRect_Affine(g, xPointHead, yPointHead, Pallete.Primary);
+        g.translate(-personMove, 0);
     }
 
     private void paintBridge(Graphics2D g) {
