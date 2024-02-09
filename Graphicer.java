@@ -1,6 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ public class Graphicer extends GraphicsSwing {
     static Integer y_bresenham(int i) {
         return yCoordinates.get(i);
     }
+
     static void bresenhamLine(Graphics g, int x1, int y1, int x2, int y2) {
         int dx = Math.abs(x2 - x1);
         int dy = Math.abs(y2 - y1);
@@ -92,7 +93,6 @@ public class Graphicer extends GraphicsSwing {
             D += 2 * dy;
         }
     }
-
 
     static void bezierCurve(Graphics g, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         for (int i = 0; i < 1000; i++) {
@@ -187,7 +187,7 @@ public class Graphicer extends GraphicsSwing {
         g.fillPolygon(bottomPoly);
     }
 
-    static void drawRect_Affine(Graphics g, int []x, int []y, Color color) {
+    static void drawRect_Affine(Graphics g, int[] x, int[] y, Color color) {
         int[] xTopPoly = { x[0], x[1], x[2] };
         int[] yTopPoly = { y[0], y[1], y[2] };
 
@@ -201,8 +201,7 @@ public class Graphicer extends GraphicsSwing {
         g.fillPolygon(bottomPoly);
     }
 
-    static void drawEclipse(Graphics g, int centerX, int centerY, int width, int height, Color color)
-    {
+    static void drawEclipse(Graphics g, int centerX, int centerY, int width, int height, Color color) {
         g.setColor(color);
         int ellipseWidth = width / 2;
         int ellipseHeight = height / 2;
@@ -241,10 +240,10 @@ public class Graphicer extends GraphicsSwing {
 
     static void drawCloudLine(Graphics g, int x1, int y1, int x2, int y2, int radius) {
         for (double j = 0; j <= 1; j += 0.05) {
-            int dx = (int)((x2 - x1) * j);
-            int dy = (int)((y2 - y1) * j);
+            int dx = (int) ((x2 - x1) * j);
+            int dy = (int) ((y2 - y1) * j);
             Graphicer.drawCircle(g, x1 + dx, y1 + dy, 15,
-                                Pallete.getShade(Pallete.highlight, 4));
+                    Pallete.getShade(Pallete.highlight, 4));
         }
     }
 

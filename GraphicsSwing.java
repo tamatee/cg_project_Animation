@@ -19,6 +19,11 @@ public class GraphicsSwing extends JPanel implements Runnable {
     protected double poleMove = 0;
     protected double bridge_velocity = 75;
     protected double pole_velocity = 50;
+    protected double person_velocity = 30;
+    protected double personMove = 0;
+    protected double comet_velocity = -15;
+    protected double cometMove = 0;
+    protected int tail_cap = 200;
 
     public void run() {
         while (true) {
@@ -30,9 +35,16 @@ public class GraphicsSwing extends JPanel implements Runnable {
             // bridge move
             bridgeMove += bridge_velocity * elapsedTime / 10000.0;
             poleMove += pole_velocity * elapsedTime / 3000.0;
-            if (Math.abs(startTime - currentTime) >= 10000) {
+            personMove += person_velocity * elapsedTime / 3000.0;
+            cometMove += comet_velocity * elapsedTime / 1000.0;
+            tail_cap += 1 * elapsedTime / 20.0;
+            if (Math.abs(startTime - currentTime) >= 6000) {
                 bridge_velocity = 0;
                 pole_velocity = 0;
+                comet_velocity = 0;
+            }
+            else if(Math.abs(startTime - currentTime) >= 3000) {
+                person_velocity = 0;
             }
 
             // Display
@@ -65,9 +77,28 @@ public class GraphicsSwing extends JPanel implements Runnable {
         drawComet(g2);
         drawStar(g2);
         drawElectricPole(g2);
+        paintObject(g2);;
         paintBridge(g2);
         g2.setColor(Color.WHITE);
         g.drawImage(buffer, 0, 0, null);
+    }
+
+    private void paintObject(Graphics2D g)
+    {
+
+        g.translate(personMove, 0);
+        int[] xPointTorso = {115, 150, 105, 140};
+        int[] yPointTorso = {430, 435, 500, 505};
+
+        int[] xPointHead = {121, 154, 116, 145};
+        int[] yPointHead = {395, 400, 450, 457};
+        g.rotate(0.06);
+        Graphicer.drawEclipse(g, 163, 380, 35, 50, Pallete.Primary);
+        Graphicer.drawEclipse(g, 163, 412, 37, 20, Pallete.Primary);
+        g.rotate(-0.09);
+        Graphicer.drawRect_Affine(g, xPointTorso, yPointTorso, Pallete.Primary);
+        Graphicer.drawRect_Affine(g, xPointHead, yPointHead, Pallete.Primary);
+        g.translate(-personMove, 0);
     }
 
     private void paintBridge(Graphics2D g) {
@@ -141,13 +172,18 @@ public class GraphicsSwing extends JPanel implements Runnable {
         Graphicer.drawRect_Affine(g, x_baseBridge, y_baseBridge, Pallete.Primary);
     }
 
-    private void drawComet(Graphics g) {
+    private void drawComet(Graphics2D g) {
+        g.translate(cometMove, -cometMove/4);
         g.setColor(Pallete.getShade(Pallete.highlight, 15));
-        for (int i = 0; i < 200; i += 10) {
+        for (int i = 0; i < tail_cap; i += 10) {
+            // int[] x = { 245, 240, 450 + i };
+            // int[] y = { 280, 285, 210 - (int) (i * 0.5) };
             int[] x = { 245, 240, 450 + i };
             int[] y = { 280, 285, 210 - (int) (i * 0.5) };
             Graphicer.drawPolygon(g, x, y);
         }
+        g.translate(-cometMove, cometMove/4);
+        repaint();
     }
 
     private void drawCloud(Graphics g) {
