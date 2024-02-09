@@ -21,8 +21,9 @@ public class GraphicsSwing extends JPanel implements Runnable {
     protected double pole_velocity = 50;
     protected double person_velocity = 30;
     protected double personMove = 0;
-    protected double comet_velocity = 10;
+    protected double comet_velocity = -15;
     protected double cometMove = 0;
+    protected int tail_cap = 200;
 
     public void run() {
         while (true) {
@@ -35,9 +36,12 @@ public class GraphicsSwing extends JPanel implements Runnable {
             bridgeMove += bridge_velocity * elapsedTime / 10000.0;
             poleMove += pole_velocity * elapsedTime / 3000.0;
             personMove += person_velocity * elapsedTime / 3000.0;
-            if (Math.abs(startTime - currentTime) >= 10000) {
+            cometMove += comet_velocity * elapsedTime / 1000.0;
+            tail_cap += 1 * elapsedTime / 20.0;
+            if (Math.abs(startTime - currentTime) >= 6000) {
                 bridge_velocity = 0;
                 pole_velocity = 0;
+                comet_velocity = 0;
             }
             else if(Math.abs(startTime - currentTime) >= 3000) {
                 person_velocity = 0;
@@ -54,7 +58,7 @@ public class GraphicsSwing extends JPanel implements Runnable {
         JFrame f = new JFrame();
         f.add(m);
         f.setTitle("Lonely night");
-        f.setSize(800, 800);
+        f.setSize(600, 600);
         f.setBackground(Color.BLACK);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setVisible(true);
@@ -168,13 +172,18 @@ public class GraphicsSwing extends JPanel implements Runnable {
         Graphicer.drawRect_Affine(g, x_baseBridge, y_baseBridge, Pallete.Primary);
     }
 
-    private void drawComet(Graphics g) {
+    private void drawComet(Graphics2D g) {
+        g.translate(cometMove, -cometMove/4);
         g.setColor(Pallete.getShade(Pallete.highlight, 15));
-        for (int i = 0; i < 200; i += 10) {
+        for (int i = 0; i < tail_cap; i += 10) {
+            // int[] x = { 245, 240, 450 + i };
+            // int[] y = { 280, 285, 210 - (int) (i * 0.5) };
             int[] x = { 245, 240, 450 + i };
             int[] y = { 280, 285, 210 - (int) (i * 0.5) };
             Graphicer.drawPolygon(g, x, y);
         }
+        g.translate(-cometMove, cometMove/4);
+        repaint();
     }
 
     private void drawCloud(Graphics g) {
