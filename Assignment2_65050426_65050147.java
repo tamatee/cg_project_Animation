@@ -214,7 +214,6 @@ class GraphicsSwing extends JPanel implements Runnable {
     protected double comet_velocity = -8;
     protected double cometMove = 0;
     protected int tail_cap = 200;
-    protected int trigger_a = 0;
 
     public void run() {
         while (true) {
@@ -229,11 +228,10 @@ class GraphicsSwing extends JPanel implements Runnable {
             personMove += person_velocity * elapsedTime / 3000.0;
             cometMove += comet_velocity * elapsedTime / 1000.0;
             tail_cap += 2 * elapsedTime / 20.0;
-            if (Math.abs(startTime - currentTime) >= 20000) {
+            if (Math.abs(startTime - currentTime) >= 10000) {
                 bridge_velocity = 0;
                 pole_velocity = 0;
                 comet_velocity = 0;
-                trigger_a = 1;
             } else if (Math.abs(startTime - currentTime) >= 5000) {
                 person_velocity = 0;
             }
@@ -269,19 +267,9 @@ class GraphicsSwing extends JPanel implements Runnable {
         drawStar(g2);
         drawElectricPole(g2);
         paintObject(g2);
-        ;
         paintBridge(g2);
-        if (trigger_a == 1)
-            paintCometFlare(g2);
         g2.setColor(Color.WHITE);
         g.drawImage(buffer, 0, 0, null);
-    }
-
-    private void paintCometFlare(Graphics2D g2) {
-        Graphicer.drawEclipse(g2, 125, -235, 100, 80, Pallete.getShade(Pallete.highlight.darker().darker(), 70));
-        Graphicer.drawEclipse(g2, 120, -227, 80, 50, Pallete.getShade(Pallete.highlight.darker(), 60));
-        Graphicer.drawEclipse(g2, 125, -218, 50, 30, Pallete.getShade(Pallete.highlight, 50));
-        Graphicer.drawEclipse(g2, 131, -212, 20, 10, Pallete.getShade(Pallete.highlight.brighter(), 40));
     }
 
     private void paintObject(Graphics2D g) {
