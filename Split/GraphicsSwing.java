@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
@@ -17,13 +16,14 @@ public class GraphicsSwing extends JPanel implements Runnable {
     protected double startTime = lastTime;
     protected double bridgeMove = 0;
     protected double poleMove = 0;
-    protected double bridge_velocity = 75;
+    protected double bridge_velocity = 100;
     protected double pole_velocity = 50;
     protected double person_velocity = 30;
     protected double personMove = 0;
-    protected double comet_velocity = -15;
+    protected double comet_velocity = -8;
     protected double cometMove = 0;
     protected int tail_cap = 200;
+    protected int trigger_a = 0;
 
     public void run() {
         while (true) {
@@ -37,13 +37,14 @@ public class GraphicsSwing extends JPanel implements Runnable {
             poleMove += pole_velocity * elapsedTime / 3000.0;
             personMove += person_velocity * elapsedTime / 3000.0;
             cometMove += comet_velocity * elapsedTime / 1000.0;
-            tail_cap += 1 * elapsedTime / 20.0;
-            if (Math.abs(startTime - currentTime) >= 6000) {
+            tail_cap += 2 * elapsedTime / 20.0;
+            if (Math.abs(startTime - currentTime) >= 20000) {
                 bridge_velocity = 0;
                 pole_velocity = 0;
                 comet_velocity = 0;
+                trigger_a = 1;
             }
-            else if(Math.abs(startTime - currentTime) >= 3000) {
+            else if(Math.abs(startTime - currentTime) >= 5000) {
                 person_velocity = 0;
             }
 
@@ -79,8 +80,18 @@ public class GraphicsSwing extends JPanel implements Runnable {
         drawElectricPole(g2);
         paintObject(g2);;
         paintBridge(g2);
+        if (trigger_a == 1)
+            paintCometFlare(g2);
         g2.setColor(Color.WHITE);
         g.drawImage(buffer, 0, 0, null);
+    }
+
+    private void paintCometFlare(Graphics2D g2)
+    {
+        Graphicer.drawEclipse(g2, 125, -235, 100, 80, Pallete.getShade(Pallete.highlight.darker().darker(), 70));
+        Graphicer.drawEclipse(g2, 120, -227, 80, 50, Pallete.getShade(Pallete.highlight.darker(), 60));
+        Graphicer.drawEclipse(g2, 125, -218, 50, 30, Pallete.getShade(Pallete.highlight, 50));
+        Graphicer.drawEclipse(g2, 131, -212, 20, 10, Pallete.getShade(Pallete.highlight.brighter(), 40));
     }
 
     private void paintObject(Graphics2D g)
@@ -92,7 +103,7 @@ public class GraphicsSwing extends JPanel implements Runnable {
 
         int[] xPointHead = {121, 154, 116, 145};
         int[] yPointHead = {395, 400, 450, 457};
-        g.rotate(0.06);
+        g.rotate(0.09);
         Graphicer.drawEclipse(g, 163, 380, 35, 50, Pallete.Primary);
         Graphicer.drawEclipse(g, 163, 412, 37, 20, Pallete.Primary);
         g.rotate(-0.09);
@@ -117,6 +128,16 @@ public class GraphicsSwing extends JPanel implements Runnable {
         Graphicer.yCoordinates.clear();
         Graphicer.drawCircle(g, 494, 110, 5, Pallete.Primary);
         Graphicer.drawEclipse(g, 415, 135, 30, 15, Pallete.DownLight);
+
+        //light_shade
+        int x_lightAffine[] = {
+                                409, 435,
+                            };
+        int y_lightAffine =
+                                142;
+        for (int i = 0; i < 20; i+=2) {
+            Graphicer.drawLightShade(g, x_lightAffine[0] - i, y_lightAffine + i, x_lightAffine[1] + i, y_lightAffine+ i, 100);
+        }
 
         // top_2
         g.setColor(Pallete.Primary);
@@ -178,7 +199,7 @@ public class GraphicsSwing extends JPanel implements Runnable {
         for (int i = 0; i < tail_cap; i += 10) {
             // int[] x = { 245, 240, 450 + i };
             // int[] y = { 280, 285, 210 - (int) (i * 0.5) };
-            int[] x = { 245, 240, 450 + i };
+            int[] x = { 300, 295, 505 + i };
             int[] y = { 280, 285, 210 - (int) (i * 0.5) };
             Graphicer.drawPolygon(g, x, y);
         }
@@ -199,7 +220,7 @@ public class GraphicsSwing extends JPanel implements Runnable {
             x2 = transfromArray(x2, +(posX[k]));
             y2 = transfromArray(y2, +(posY[k]));
             for (int i = 0; i < x1.length; i++)
-                Graphicer.drawCloudLine(g, x1[i], y1[i], x2[i], y2[i], 15);
+                Graphicer.drawCloudLine(g, x1[i], y1[i], x2[i], y2[i], 15, Pallete.highlight);
         }
     }
 
