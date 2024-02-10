@@ -2,16 +2,13 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import java.awt.Polygon;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 class Pallete {
     static final Color Primary = Color.decode("#0f1a2e");
@@ -27,9 +24,9 @@ class Pallete {
 
     static Color getGradient(Color color1, Color color2, double value) {
         // from color1 to color2 by percent
-        int result_red = (int)(color1.getRed() + ((value / 100) * (color2.getRed() - color1.getRed())));
-        int result_green = (int)(color1.getGreen() + ((value / 100) * (color2.getGreen() - color1.getGreen())));
-        int result_blue = (int)(color1.getBlue() + ((value / 100) * (color2.getBlue() - color1.getBlue())));
+        int result_red = (int) (color1.getRed() + ((value / 100) * (color2.getRed() - color1.getRed())));
+        int result_green = (int) (color1.getGreen() + ((value / 100) * (color2.getGreen() - color1.getGreen())));
+        int result_blue = (int) (color1.getBlue() + ((value / 100) * (color2.getBlue() - color1.getBlue())));
 
         // convert rgb to hex
         return Color.decode(String.format("#%02x%02x%02x", result_red, result_green, result_blue));
@@ -37,7 +34,6 @@ class Pallete {
 }
 
 class Graphicer extends GraphicsSwing {
-    static Random random = new Random(1);
     static List<Integer> yCoordinates = new ArrayList<>();
 
     static Integer y_bresenham(int i) {
@@ -45,30 +41,23 @@ class Graphicer extends GraphicsSwing {
     }
 
     static void bresenhamLine(Graphics g, int x1, int y1, int x2, int y2, int size) {
-
         int dx = Math.abs(x2 - x1);
         int dy = Math.abs(y2 - y1);
-
         int sx = (x1 < x2) ? 1 : -1;
         int sy = (y1 < y2) ? 1 : -1;
         boolean isSwap = false;
-
         if (dy > dx) {
             int temp = dx;
             dx = dy;
             dy = temp;
             isSwap = true;
         }
-
         int D = 2 * dy - dx;
         int x = x1;
         int y = y1;
-
         for (int i = 1; i < dx; i++) {
             yCoordinates.add(y); // Store the y-coordinate
-
             plot(g, x, y, size);
-
             if (D >= 0) {
                 if (isSwap)
                     x += sx;
@@ -76,12 +65,10 @@ class Graphicer extends GraphicsSwing {
                     y += sy;
                 D -= 2 * dx;
             }
-
             if (isSwap)
                 y += sy;
             else
                 x += sx;
-
             D += 2 * dy;
         }
     }
@@ -103,81 +90,15 @@ class Graphicer extends GraphicsSwing {
         }
     }
 
-    static BufferedImage floodFill(BufferedImage m, int x, int y, Color targetColor, Color replacementColor) {
-        Queue<NodeCoordinate> q = new LinkedList<>();
-        coloredPlot(m.getGraphics(), x, y, replacementColor);
-        q.add(new NodeCoordinate(x, y));
-        while (!q.isEmpty()) {
-            NodeCoordinate cur = q.poll();
-            try {
-                // South
-                if (m.getRGB(cur.getX(), cur.getY() + 1) == targetColor.getRGB()) {
-                    coloredPlot(m.getGraphics(), cur.getX(), cur.getY() + 1, replacementColor);
-                    q.add(new NodeCoordinate(cur.getX(), cur.getY() + 1));
-                }
-                // North
-                if (m.getRGB(cur.getX(), cur.getY() - 1) == targetColor.getRGB()) {
-                    coloredPlot(m.getGraphics(), cur.getX(), cur.getY() - 1, replacementColor);
-                    q.add(new NodeCoordinate(cur.getX(), cur.getY() - 1));
-                }
-                // West
-                if (m.getRGB(cur.getX() - 1, cur.getY()) == targetColor.getRGB()) {
-                    coloredPlot(m.getGraphics(), cur.getX() - 1, cur.getY(), replacementColor);
-                    q.add(new NodeCoordinate(cur.getX() - 1, cur.getY()));
-                }
-                // East
-                if (m.getRGB(cur.getX() + 1, cur.getY()) == targetColor.getRGB()) {
-                    coloredPlot(m.getGraphics(), cur.getX() + 1, cur.getY(), replacementColor);
-                    q.add(new NodeCoordinate(cur.getX() + 1, cur.getY()));
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-
-            }
-        }
-        return m;
-    }
-
     static void coloredPlot(Graphics g, int x, int y, Color c) {
         g.setColor(c);
         g.fillRect(x, y, 1, 1);
         g.setColor(Color.BLACK);
     }
 
-    static class NodeCoordinate {
-        private int x;
-        private int y;
-
-        NodeCoordinate(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-    }
-
     static void drawPolygon(Graphics g, int[] x, int[] y) {
         Polygon poly = new Polygon(x, y, x.length);
         g.fillPolygon(poly);
-    }
-
-    static void drawRect(Graphics g, int x1, int y1, int x2, int y2, Color color) {
-        int[] xTopPoly = { x1, x2, x1 };
-        int[] yTopPoly = { y1, y1, y2 };
-
-        int[] xBottomPoly = { x1, x2, x2 };
-        int[] yBottomPoly = { y2, y1, y2 };
-        Polygon topPoly = new Polygon(xTopPoly, yTopPoly, 3);
-        Polygon bottomPoly = new Polygon(xBottomPoly, yBottomPoly, 3);
-
-        g.setColor(color);
-        g.fillPolygon(topPoly);
-        g.fillPolygon(bottomPoly);
     }
 
     static void drawRect_Affine(Graphics g, int[] x, int[] y, Color color) {
@@ -281,8 +202,6 @@ class Graphicer extends GraphicsSwing {
 
 class GraphicsSwing extends JPanel implements Runnable {
 
-    protected Random random = new Random();
-
     protected double lastTime = System.currentTimeMillis();
     protected double currentTime, elapsedTime;
     protected double startTime = lastTime;
@@ -315,8 +234,7 @@ class GraphicsSwing extends JPanel implements Runnable {
                 pole_velocity = 0;
                 comet_velocity = 0;
                 trigger_a = 1;
-            }
-            else if(Math.abs(startTime - currentTime) >= 5000) {
+            } else if (Math.abs(startTime - currentTime) >= 5000) {
                 person_velocity = 0;
             }
 
@@ -350,7 +268,8 @@ class GraphicsSwing extends JPanel implements Runnable {
         drawComet(g2);
         drawStar(g2);
         drawElectricPole(g2);
-        paintObject(g2);;
+        paintObject(g2);
+        ;
         paintBridge(g2);
         if (trigger_a == 1)
             paintCometFlare(g2);
@@ -358,23 +277,21 @@ class GraphicsSwing extends JPanel implements Runnable {
         g.drawImage(buffer, 0, 0, null);
     }
 
-    private void paintCometFlare(Graphics2D g2)
-    {
+    private void paintCometFlare(Graphics2D g2) {
         Graphicer.drawEclipse(g2, 125, -235, 100, 80, Pallete.getShade(Pallete.highlight.darker().darker(), 70));
         Graphicer.drawEclipse(g2, 120, -227, 80, 50, Pallete.getShade(Pallete.highlight.darker(), 60));
         Graphicer.drawEclipse(g2, 125, -218, 50, 30, Pallete.getShade(Pallete.highlight, 50));
         Graphicer.drawEclipse(g2, 131, -212, 20, 10, Pallete.getShade(Pallete.highlight.brighter(), 40));
     }
 
-    private void paintObject(Graphics2D g)
-    {
+    private void paintObject(Graphics2D g) {
 
         g.translate(personMove, 0);
-        int[] xPointTorso = {115, 150, 105, 140};
-        int[] yPointTorso = {430, 435, 500, 505};
+        int[] xPointTorso = { 115, 150, 105, 140 };
+        int[] yPointTorso = { 430, 435, 500, 505 };
 
-        int[] xPointHead = {121, 154, 116, 145};
-        int[] yPointHead = {395, 400, 450, 457};
+        int[] xPointHead = { 121, 154, 116, 145 };
+        int[] yPointHead = { 395, 400, 450, 457 };
         g.rotate(0.09);
         Graphicer.drawEclipse(g, 163, 380, 35, 50, Pallete.Primary);
         Graphicer.drawEclipse(g, 163, 412, 37, 20, Pallete.Primary);
@@ -390,7 +307,7 @@ class GraphicsSwing extends JPanel implements Runnable {
         int frence_y_offset = 470;
         g.translate(0, bridgeMove);
 
-        //Light_pole
+        // Light_pole
         Graphicer.drawCircle(g, 495, 425, 15, Pallete.Primary);
         int x_poleBase[] = { 483, 505, 478, 510 };
         int y_poleBase[] = { 425, 425, 500, 520 };
@@ -401,14 +318,14 @@ class GraphicsSwing extends JPanel implements Runnable {
         Graphicer.drawCircle(g, 494, 110, 5, Pallete.Primary);
         Graphicer.drawEclipse(g, 415, 135, 30, 15, Pallete.DownLight);
 
-        //light_shade
+        // light_shade
         int x_lightAffine[] = {
-                                409, 435,
-                            };
-        int y_lightAffine =
-                                142;
-        for (int i = 0; i < 20; i+=2) {
-            Graphicer.drawLightShade(g, x_lightAffine[0] - i, y_lightAffine + i, x_lightAffine[1] + i, y_lightAffine+ i, 100);
+                409, 435,
+        };
+        int y_lightAffine = 142;
+        for (int i = 0; i < 20; i += 2) {
+            Graphicer.drawLightShade(g, x_lightAffine[0] - i, y_lightAffine + i, x_lightAffine[1] + i,
+                    y_lightAffine + i, 100);
         }
 
         // top_2
@@ -466,16 +383,14 @@ class GraphicsSwing extends JPanel implements Runnable {
     }
 
     private void drawComet(Graphics2D g) {
-        g.translate(cometMove, -cometMove/4);
+        g.translate(cometMove, -cometMove / 4);
         g.setColor(Pallete.getShade(Pallete.highlight, 15));
         for (int i = 0; i < tail_cap; i += 10) {
-            // int[] x = { 245, 240, 450 + i };
-            // int[] y = { 280, 285, 210 - (int) (i * 0.5) };
             int[] x = { 300, 295, 505 + i };
             int[] y = { 280, 285, 210 - (int) (i * 0.5) };
             Graphicer.drawPolygon(g, x, y);
         }
-        g.translate(-cometMove, cometMove/4);
+        g.translate(-cometMove, cometMove / 4);
         repaint();
     }
 
