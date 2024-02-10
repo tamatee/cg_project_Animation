@@ -17,40 +17,7 @@ public class Graphicer extends GraphicsSwing {
         return yCoordinates.get(i);
     }
 
-    static void bresenhamLine(Graphics g, int x1, int y1, int x2, int y2) {
-        int dx = Math.abs(x2 - x1);
-        int dy = Math.abs(y2 - y1);
 
-        int sx = (x1 < x2) ? 1 : -1;
-        int sy = (y1 < y2) ? 1 : -1;
-        boolean isSwap = false;
-
-        if (dy > dx) {
-            int temp = dx;
-            dx = dy;
-            dy = temp;
-            isSwap = true;
-        }
-        int D = 2 * dy - dx;
-        int x = x1;
-        int y = y1;
-
-        for (int i = 1; i < dx; i++) {
-            plot(g, x, y);
-            if (D >= 0) {
-                if (isSwap)
-                    x += sx;
-                else
-                    y += sy;
-                D -= 2 * dx;
-            }
-            if (isSwap)
-                y += sy;
-            else
-                x += sx;
-            D += 2 * dy;
-        }
-    }
 
     static void bresenhamLine(Graphics g, int x1, int y1, int x2, int y2, int size) {
 
@@ -106,7 +73,8 @@ public class Graphicer extends GraphicsSwing {
                     (int) (Math.pow(1 - t, 3) * y1
                             + 3 * t * Math.pow(1 - t, 2) * y2
                             + 3 * t * t * (1 - t) * y3
-                            + Math.pow(t, 3) * y4));
+                            + Math.pow(t, 3) * y4),
+                    1);
         }
     }
 
@@ -238,17 +206,47 @@ public class Graphicer extends GraphicsSwing {
         g.fillPolygon(circle);
     }
 
-    static void drawCloudLine(Graphics g, int x1, int y1, int x2, int y2, int radius) {
+    static void fourSide(Graphics g, int centerX, int centerY, int radius, Color color) {
+        int sides = 4;
+        int[] xPoints = new int[sides];
+        int[] yPoints = new int[sides];
+
+        for (int i = 0; i < sides; i++) {
+            double theta = 2 * Math.PI * i / sides;
+            xPoints[i] = (int) (centerX + radius * Math.cos(theta));
+            yPoints[i] = (int) (centerY + radius * Math.sin(theta));
+        }
+
+        Polygon circle = new Polygon(xPoints, yPoints, sides);
+        g.setColor(color);
+        g.fillPolygon(circle);
+    }
+
+    static void drawCloudLine(Graphics g, int x1, int y1, int x2, int y2, int radius, Color color) {
         for (double j = 0; j <= 1; j += 0.05) {
             int dx = (int) ((x2 - x1) * j);
             int dy = (int) ((y2 - y1) * j);
             Graphicer.drawCircle(g, x1 + dx, y1 + dy, 15,
-                    Pallete.getShade(Pallete.highlight, 4));
+                    Pallete.getShade(color, 4));
         }
     }
 
-    static void plot(Graphics g, int x, int y) {
-        g.fillRect(x, y, 1, 1);
+    static void drawLightShade(Graphics g, int x1, int y1, int x2, int y2, int radius) {
+        for (double j = 0; j <= 1; j += 0.02) {
+            int dx = (int) ((x2 - x1) * j);
+            int dy = (int) ((y2 - y1) * j);
+            fourSide(g, x1 + dx, y1 + dy, 10,
+                    Pallete.getShade(Pallete.Accent, 5));
+        }
+    }
+
+    static void drawLightShade_1(Graphics g, int x1, int y1, int x2, int y2, int radius) {
+        for (double j = 0; j <= 1; j += 0.02) {
+            int dx = (int) ((x2 - x1) * j);
+            int dy = (int) ((y2 - y1) * j);
+            Graphicer.drawCircle(g, x1 + dx, y1 + dy, 4,
+                    Pallete.getShade(Pallete.Accent, 20));
+        }
     }
 
     static void plot(Graphics g, int x, int y, int size) {
